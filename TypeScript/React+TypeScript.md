@@ -68,7 +68,7 @@ let userName: string = "Max";
 let isInstructor: boolean = true;
 ```
 
-### 2. 그 외 더 복잡한 자료형: array, object
+### 2. 복잡한 자료형: array, object
 
 - 변수에 타입을 지정할 수 있다.
 - 타입을 지정해주지 않으면 기본으로 `any` 타입으로 지정된다. 명시적으로 `let person: any` 라 지정해줄 수도 있다. `any`는 어떤 값이든 저장할 수 있으나 타입스크립트를 사용하는 주 목적과 반대되기 때문에 가급적 사용하지 않는 것이 좋다.
@@ -96,9 +96,47 @@ let people: {
 
 ### 3. 함수(function type), 매개변수(parameter)
 
-모든 변수가 타입을 하나만 갖고 있었다. 한개의 변수에는 한가지 자료형만
+```tsx
+//function & type
+function add(a: number, b: number) {
+  return a + b;
+}
+```
 
-### 타입 추론(Type inference)
+- 매개변수에도 타입을 지정할 수 있다.
+- 타입스크립트는 함수의 값을 통해 타입을 알고 함수 타입을 추론한다. 위 코드에서 `add`함수의 두 개의 매개변수는 number 타입이다. 이를 통해 반환 값 역시 숫자형이라 추론한다.
+
+```tsx
+//number or string 모두 가능.
+function add(a: number, b: number): number {
+  return a + b;
+}
+function add(a: number, b: number): string {
+  return a + b;
+}
+
+//union type으로 지정 가능
+function add(a: number, b: number): string | number {
+  return a + b;
+}
+```
+
+- 함수의 반환 타입을 직접 지정할 수도 있다
+- 타입스크립트는 타입을 추론하기 때문에 꼭 지정해줄 필요가 없다. 명시적으로 작성하고 싶다면 적어주지만 그렇지 않을 경우 정의해줄 필요가 없다.
+
+```tsx
+//이 함수의 타입은 void 이다.
+function Output(value: any) {
+  console.log(value);
+}
+```
+
+- return문이 없을 경우 갖는 특별한 반환 타입 void.
+- void는 함수에 반환 값이 없다는 것을 의미한다. null 또는 undefined와 비슷하나 항상 함수와 결합하여 사용한다.
+
+- 매개변수 타입 뿐 아니라 반환 값 타입도 생각해야 한다.
+
+### 🚀 타입 추론(Type inference)
 
 ```tsx
 let course = "React - The Complete Guide";
@@ -106,3 +144,29 @@ course = 12341; // 에러 발생. 타입 추론으로 타입을 지정하지 않
 ```
 
 - 타입스크립의 핵심 기능인 **타입 추론(type inference)**. 명시적인 타입표기 없이도 어떤 타입을 어디 사용해야할지 추론한다. 할당된 값의 자료형을 보고 해당 값의 타입을 사용. 위 코드에서 `course` 라는 변수에 할당된 값은 문자열이므로 타입 추론이 발생해 course에 number type 값을 할당하게 되면 에러가 발생한다.
+
+### 🚀 유니온 타입(Union Type)
+
+```tsx
+let course: string | number = "React - The Complete Guide";
+course = 12341; //에러가 발생하지 않음.
+
+let userName: string | string[]; // 타입은 문자열이나 문자열배열이다라고 타입 정의.
+```
+
+- 자바스크립트의 `||` (or 연산자)와 같이 타입을 A이거나 B이다 라고 정의하는 타입이다.
+- 타입 추론을 사용하는 경우가 아니라면 유니온 타입은 타입을 지정한 곳이면 어디든 사용할 수 있다.
+
+### ⭐ 타입 별칭(Type Aliases)
+
+```tsx
+type Person = {
+  name: string;
+  age: number;
+};
+let person: Person;
+let people: Person[];
+```
+
+- 동일한 타입을 반복해서 정의할 경우, 기본 타입을 만든 후, 더 복잡한 타입을 정의할 때 그 타입의 별칭을 사용할 수 있다.
+- 타입별칭을 사용하면 코드가 간결해지고 관리하기 수월해진다.
