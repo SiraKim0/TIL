@@ -170,3 +170,55 @@ let people: Person[];
 
 - 동일한 타입을 반복해서 정의할 경우, 기본 타입을 만든 후, 더 복잡한 타입을 정의할 때 그 타입의 별칭을 사용할 수 있다.
 - 타입별칭을 사용하면 코드가 간결해지고 관리하기 수월해진다.
+
+### ⭐ 제네릭(Generic)
+
+> 제네릭이란, 여러 데이터 타입에 대해 클래스/인터페이스 혹은 함수가 동일하게 동작할 수 있게 해주는 기능이다.
+
+```tsx
+let numbers = [1, 2, 3];
+let numbers: number[] = [1, 2, 3]; //명시적으로 타입을 지정.
+```
+
+타입이 유추되지만 명시적으로 할당한다. 그러나 `number[]` 은 문법적 설탕이다. 모든 배열은 Array 타입이지만 배열 항목 타입으로 봤을 때 제네릭 유형이라 할 수 있다.
+
+```tsx
+let numbers: Array<number> = [1, 2, 3];
+let numbers: number[] = [1, 2, 3]; //문법적 설탕
+```
+
+명시적으로 타입을 정의하자면 위와 같이 작성할 수 있다. 그러나 이는 길고 투박하므로 `number[]` 와 같이 작성할 수 있다.
+
+하나의 예시를 보며 제네릭을 이해해보자.
+
+```tsx
+function insertAtBeginning(array: any[], value: any) {
+  const newArray = [value, ...array];
+  return newArray;
+}
+const demoArray = [1, 2, 3];
+const numberArray = insertAtBeginning(demoArray, -1); //[-1, 1, 2 3]
+
+numberArray[0].split(""); //에러. 숫자형에는 문자열 함수를 사용할 수 없다.
+```
+
+- 위 코드에서 `numberArray`의 추론 타입은 `any[]`이다. 매개변수 타입을 any type으로 정의해놓았기 때문에 `numberArray`에 숫자만 들어있음에도 타입스크립트는 숫자로 인식하지 못한다. 이때 `array: number`로 타입을 지정할 수 있으나 문자열 배열을 사용할 수도 있으므로 any type을 사용한다.
+- **문제 발생**: `numberArray`가 any type일 때 문자열에서 사용하는 함수를 사용하지 못한다. `numberArray`에 들어있는값은 숫자이기 때문.
+- **문제 해결**: 제네릭 함수를 사용.
+
+```tsx
+//제네릭 함수로 변환
+function insertAtBeginning<T>(array: T[], value: T) {
+  const newArray = [value, ...array];
+  return newArray;
+}
+const demoArray = [1, 2, 3];
+const numberArray = insertAtBeginning(demoArray, -1); //[-1, 1, 2 3]
+const stringArray = insertAtBeginning(["a", "b", "c"], "d");
+
+stringArray;
+```
+
+- 제네릭은 자바스크립트에서는 사용할 수 없고 타입스크립트에서 사용할 수 있다.
+- 함수를 any에서 제네릭으로 지정한다. 제네릭 타입으로 지정할 땐 함수 뒤에 `<>` 를 치고 타입 파라미터를 넣는다. 보통 Type의 약자로 `T`를 사용한다. 타입스크립트는 `demoArray`가 any가 아니므로 `demoArray`의 값을 확인하고 숫자 배열이라 추론한다. 이때 array와 value 값이 같은 타입을 갖는다고 지정해주었으므로, `-1`은 `demoArray`가 숫자 배열이고 `demoArray`와 같은 타입을 가져야하기 때문에 숫자 타입이라 추론된다. `stringArray`에서도 array에 문자열 배열을 받았으므로 타입을 문자열 배열이며 value는 문자열이라 추론한다.
+- 제네릭 타입을 사용하면 타입을 유연하게 관리할 수 있고 안정적이다.
