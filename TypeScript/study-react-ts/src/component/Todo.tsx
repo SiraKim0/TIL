@@ -1,11 +1,13 @@
 //Todo.tsx
 import React from "react";
+import TodoType from "../model/todo";
+import TodoItem from "./TodoItem";
 
-const Todo: React.FC<{ items: string[] }> = (props) => {
+const Todo: React.FC<{ items: TodoType[] }> = (props) => {
   return (
     <ul>
       {props.items.map((item) => (
-        <li key={item}>{item}</li>
+        <TodoItem key={item.id} text={item.text} />
       ))}
     </ul>
   );
