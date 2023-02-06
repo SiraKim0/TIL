@@ -103,3 +103,113 @@ npx create-react-app study-react-ts--template typescript
 
     export default App;
     ```
+
+### 🧐데이터 모델 추가
+
+- model 폴더 생성 → todo.ts 파일 생성
+  - 컴포넌트를 생성하는 것이 아니므로 tsx가 아닌 ts로 작성
+  - tsx에서는 JSX 문법을 사용할 수 있고 ts에선 사용 불가
+- todo.ts에서 class로 타입을 정의한다.(생성할 땐 type 키워드, interface 키워드를 사용해도 됨)
+  ```tsx
+  //todo.ts
+  class Todo {
+    id: string;
+    text: string;
+    constructor(todoText: string) {
+      this.id = new Date().toISOString();
+      this.text = todoText;
+    }
+  }
+  export default Todo;
+  ```
+- Todo.tsx에서 정의된 class를 불러온 후 그에 맞춰 Todo.tsx와 App.tsx를 수정한다.
+
+  - 정의된 class 이름은 타입으로 사용될 수 있다.
+  - item 배열의 객체는 타입이 문자열인 id 프로퍼티를 가진다.
+
+  ```tsx
+  //Todo.tsx
+  import React from "react";
+  import TodoType from "../model/todo";
+
+  const Todo: React.FC<{ items: TodoType[] }> = (props) => {
+    return (
+      <ul>
+        {props.items.map((item) => (
+          <li key={item.id}>{item.text}</li>
+        ))}
+      </ul>
+    );
+  };
+  export default Todo;
+  ```
+
+  ```tsx
+  //App.tsx
+  import Todo from "./component/Todo";
+  import TodoType from "./model/todo";
+
+  function App() {
+    const todos = [
+      new TodoType("Learn React"),
+      new TodoType("Learn TypeScript"),
+    ];
+    return (
+      <div>
+        <Todo items={todos} />
+      </div>
+    );
+  }
+
+  export default App;
+  ```
+
+### 🧐간단한 연습
+
+- 아래 코드에서 map으로 출력하고 있는 <li>를 분리해 별도의 컴포넌트로 만들기
+- JSX 코드를 유지한 상태에서 (나의 경우)TodoType 배열로 작업 진행
+
+```tsx
+//Todo.tsx
+import React from "react";
+import TodoType from "../model/todo";
+
+const Todo: React.FC<{ items: TodoType[] }> = (props) => {
+  return (
+    <ul>
+      {props.items.map((item) => (
+        <li key={item.id}>{item.text}</li>
+      ))}
+    </ul>
+  );
+};
+export default Todo;
+```
+
+- 컴포넌트 분리 후 코드:
+
+```tsx
+//Todo.tsx
+import React from "react";
+import TodoType from "../model/todo";
+import TodoItem from "./TodoItem";
+
+const Todo: React.FC<{ items: TodoType[] }> = (props) => {
+  return (
+    <ul>
+      {props.items.map((item) => (
+        <TodoItem key={item.id} text={item.text} />
+      ))}
+    </ul>
+  );
+};
+export default Todo;
+```
+
+```tsx
+//TodoItem.tsx
+const TodoItem: React.FC<{ text: string }> = (props) => {
+  return <li>{props.text}</li>;
+};
+export default TodoItem;
+```
