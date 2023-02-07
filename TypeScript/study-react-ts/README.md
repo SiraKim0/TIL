@@ -15,7 +15,7 @@ npx create-react-app study-react-ts--template typescript
   - 일반적인 자바스크립트에서는 `npm start`시 단순히 js 코드를 받아 파일들을 하나로 묶고 최적화를 하였다.
 - `package.json`에서 `@types`패키지들이 추가된다. 자바스크립트 라이브러리와 타입스크립트 사이에서 **번역기**와 같은 역할을 한다. 자바스크립트가 타입스크립트를 이해할 수 있도록 변환해주는 것.
 
-### 🧐 컴포넌트 작업하기
+### 🧐 Todo 컴포넌트 작업하기
 
 - CRA를 통해 자동으로 생성된 코드 중 불필요한 파일은 정리하고 시작한다 (`App.test.tsx`, `logo.svg`등)
 - `Component` 폴더 생성 → 폴더 안에 `Todo.tsx` 파일 생성
@@ -212,4 +212,27 @@ const TodoItem: React.FC<{ text: string }> = (props) => {
   return <li>{props.text}</li>;
 };
 export default TodoItem;
+```
+
+### 🧐Todo 작성 폼 만들기
+
+- useRef를 사용하여 한 번에 입력을 가져오는 방식
+- React.FormEvent는 리액트 패키지에서 제공하는 타입이다.
+
+```tsx
+import React from "react";
+
+const NewTodo = () => {
+  const submitHandler = (event: React.FormEvent) => {
+    event.preventDefault();
+  };
+  return (
+    <form onSubmit={submitHandler}>
+      <label htmlFor="text">Todo text</label>
+      <input type="text" id="text" />
+      <button>Add Todo</button>
+    </form>
+  );
+};
+export default NewTodo;
 ```
