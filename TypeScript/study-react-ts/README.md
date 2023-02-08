@@ -214,14 +214,18 @@ const TodoItem: React.FC<{ text: string }> = (props) => {
 export default TodoItem;
 ```
 
-### 🧐Todo 작성 폼 만들기
+### **🧐Todo 작성 폼 만들기**
 
-- useRef를 사용하여 한 번에 입력을 가져오는 방식
-- React.FormEvent는 리액트 패키지에서 제공하는 타입이다.
+- submitHandler 함수 작성.
+  - 타입스크립트에서 이벤트를 처리하려면 이벤트 타입을 지정해야 한다.
+  - 리액트 패키지에서 제공하는 **React.FormEvent** 이벤트 관련 타입을 사용한다.
+    - **React.ChangeEvent**는 **onChange** 이벤트 등에 사용
+    - **React.MouseEvent**는 **onClick** 이벤트 등에 사용
+    - **React.KeyboardEvent**는 **onKeydown, onKeyup** 이벤트 등에 사용
+    - **React.FormEvent**는 **<form> 태그의 onSubmit** 등에 사용
+  - submit 태그에는 버튼을 눌렀을 때 발생하는 고유의 동작이 있다. 페이지 이동, form 내부에 input을 전송하는 등의 동작들을 **event.preventDefault()** 메서드로 중단시킨다.
 
 ```tsx
-import React from "react";
-
 const NewTodo = () => {
   const submitHandler = (event: React.FormEvent) => {
     event.preventDefault();
@@ -230,6 +234,49 @@ const NewTodo = () => {
     <form onSubmit={submitHandler}>
       <label htmlFor="text">Todo text</label>
       <input type="text" id="text" />
+      <button>Add Todo</button>
+    </form>
+  );
+};
+export default NewTodo;
+```
+
+- useRef를 사용하여 input 요소와 연결하기
+
+  - useRef란?
+    > useRef는 저장공간, dom 요소 접근 위해 사용한다. ref 안에 값을 저장하면 컴포넌트가 렌더링될 때 값이 변화되지 않고 유지되고, 상태가 바뀌어도 ref 안에 값을 변경해도 컴포넌트가 다시 렌더링되지 않는다.
+  - `todoTextInputRef`라는 변수에 useRef 호출하고 input 태그의 ref 속성에 `todoTextInputRef`래퍼런스를 지정한다
+    - 래퍼런스가 명확하지 않기 때문에 오류 발생 → 레퍼런스에 저장될 데이터의 타입을 지정해주어야 한다
+  - useRef는 제네릭 타입으로 정의되어 있고 그에 맞춰 제네릭 타입으로 타입을 지정해준다.
+    - input 요소에 데이터를 저장하므로 **HTMLInputElement로 타입을 지정**. \*\*\*\*
+    - **useRef의 초기값은 null로 지정.** 다른 값이 할당되어 있을 수도 있기 때문에 초기값을 지정해주지 않으면 오류가 발생한다.
+  - `enteredText` 변수를 만들어 `todoTextInputRef`와 연결해준다.
+
+    - **useRef()는 current 속성을 가지고 있는 객체를 반환**한다. 인자로 넘어온 초기값을 current 속성에 할당한다(여기서 초기값은 null). 이때 `.`을 찍으면 타입을 명확하게 지정해주었기 때문에 자동완성을 사용할 수 있다.
+      ![230208스샷1](https://user-images.githubusercontent.com/50124980/217566161-5636b6d3-9709-430b-a084-c41cf6f9e37e.png)
+
+  - `todoTextInputRef.current?.value`, `todoTextInputRef.current!.value`
+    - 객체 프로퍼티에 타입을 정의했으나 값을 할당하지 않는 경우 오류가 발생한다. 이러한 경우 선택적 프로퍼티(Optional Properties) 문법을 사용하여 해결할 수 있다.
+    - 타입스크립트에서 `!` **느낌표**는null이나 undefined가 아님을 단언한다.
+    - 타입스크립트에서 `?` **물음표**는 optional. 필수값이 아닌 옵셔널한 값이라는 의미이다.
+    - 아래 코드에서는 래퍼런스와 요소가 연결되어 있고 null이나 undefined가 아니라는 것을 알기 때문에 ! 를 사용할 수 있다. 단, 확신할 때 사용해야 함(?)
+
+```tsx
+import { useRef } from "react";
+
+const NewTodo = () => {
+  const todoTextInputRef = useRef<HTMLInputElement>(null);
+  const submitHandler = (event: React.FormEvent) => {
+    event.preventDefault();
+    const enteredText = todoTextInputRef.current!.value;
+    if (enteredText.trim().length === 0) {
+      return;
+    }
+  };
+  return (
+    <form onSubmit={submitHandler}>
+      <label htmlFor="text">Todo text</label>
+      <input type="text" id="text" ref={todoTextInputRef} />
       <button>Add Todo</button>
     </form>
   );
